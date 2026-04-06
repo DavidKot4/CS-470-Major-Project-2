@@ -3,15 +3,26 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+
+vertices = (
+    (1, -1, -1), (1, 1, -1), (-1, 1, -1), (-1, -1, -1),
+    (1, -1, 1), (1, 1, 1), (-1, -1, 1), (-1, 1, 1)
+)
+
+edges = (
+    (0,1), (0,3), (0,4), (2,1), (2,3), (2,7),
+    (6,3), (6,4), (6,7), (5,1), (5,4), (5,7)
+)
+
+
 def mySquare():
     glClear(GL_COLOR_BUFFER_BIT)
-    glBegin(GL_QUADS)
-    glVertex2f(-0.5, -0.5)
-    glVertex2f(0.5, -0.5)
-    glVertex2f(0.5, 0.5)
-    glVertex2f(-0.5, 0.5)
+    glBegin(GL_LINES)
+    for edge in edges:
+        for vertex_index in edge:
+            glVertex3fv(vertices[vertex_index])
+            glColor3f(0.0, 1.0, 0.0)
     glEnd()
-    glFlush()
     
 
 def main():
@@ -19,14 +30,23 @@ def main():
     display = (800,600)
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 
+    #initialize perspective and camera FOV, aspect ratio, and clipping planes
+    gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
+    glTranslatef(0, 0, -5)
+
+    #rotate cube
+    glRotatef(45, 0, 1, 0)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            mySquare()
+        
+        # Rotation (angle, x, y, z)
+        mySquare()
         pygame.display.flip()
-        pygame.time.wait(10)
 
+        
 main()
     
